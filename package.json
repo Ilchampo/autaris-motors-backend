@@ -1,0 +1,87 @@
+{
+    "name": "autaris-motors-backend",
+    "version": "1.0.0",
+    "description": "Second hand vehicle transactions web application",
+    "keywords": [
+        "vehicle",
+        "second-hand",
+        "market",
+        "node"
+    ],
+    "homepage": "https://github.com/Ilchampo/autaris-motors-backend#readme",
+    "bugs": {
+        "url": "https://github.com/Ilchampo/autaris-motors-backend/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Ilchampo/autaris-motors-backend.git"
+    },
+    "license": "ISC",
+    "author": "Pablo Beltran",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsx watch --clear-screen=false src/index.ts",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "start": "node -r module-alias/register dist/index.js",
+        "prepare": "husky"
+    },
+    "dependencies": {
+        "bcrypt": "^6.0.0",
+        "cloudinary": "^2.10.0",
+        "cors": "^2.8.6",
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "express-rate-limit": "^8.6.0",
+        "jsonwebtoken": "^9.0.3",
+        "module-alias": "^2.3.4",
+        "mongodb": "^7.5.0",
+        "mongoose": "^9.8.0",
+        "multer": "^2.2.0",
+        "zod": "^4.4.3"
+    },
+    "allowScripts": {
+        "bcrypt@6.0.0": true,
+        "esbuild@0.28.1": true,
+        "fsevents@2.3.3": true
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@types/bcrypt": "^6.0.0",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/module-alias": "^2.0.4",
+        "@types/multer": "^2.2.0",
+        "@types/node": "^26.1.1",
+        "eslint": "^10.7.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.6",
+        "globals": "^17.7.0",
+        "husky": "^9.1.7",
+        "jiti": "^2.7.0",
+        "prettier": "^3.9.5",
+        "tsx": "^4.23.1",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.64.0"
+    },
+    "_moduleAliases": {
+        "@": "dist",
+        "@app": "dist/app",
+        "@controllers": "dist/controllers",
+        "@lib": "dist/lib",
+        "@constants": "dist/lib/constants",
+        "@instances": "dist/lib/instances",
+        "@interfaces": "dist/lib/interfaces",
+        "@schemas": "dist/lib/schemas",
+        "@utils": "dist/lib/utils",
+        "@middlewares": "dist/middlewares",
+        "@models": "dist/models",
+        "@routes": "dist/routes",
+        "@services": "dist/services"
+    }
+}
