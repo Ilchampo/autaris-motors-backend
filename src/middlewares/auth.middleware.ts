@@ -23,26 +23,54 @@ const getBearerToken = (req: Request): string => {
     return token;
 };
 
+const resolveAuthUser = async (req: Request) => {
+    const token = getBearerToken(req);
+    const payload = verifyToken(token);
+    const user = await getUserById(payload.id, { activeOnly: true });
+
+    if (!user) {
+        throw new UnauthorizedError('Invalid or inactive user');
+    }
+
+    return {
+        id: user._id.toString(),
+        email: user.email,
+        role: user.role,
+    };
+};
+
 export const authenticate: RequestHandler = async (
     req: Request,
     _res: Response,
     next: NextFunction,
 ): Promise<void> => {
     try {
-        const token = getBearerToken(req);
-        const payload = verifyToken(token);
-        const user = await getUserById(payload.id, { activeOnly: true });
-
-        if (!user) {
-            throw new UnauthorizedError('Invalid or inactive user');
+        req.user = await resolveAuthUser(req);
+        next();
+    } catch (error) {
+        if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
+            next(error);
+            return;
         }
 
-        req.user = {
-            id: user._id.toString(),
-            email: user.email,
-            role: user.role,
-        };
+        next(new UnauthorizedError('Invalid or expired token'));
+    }
+};
 
+export const optionalAuthenticate: RequestHandler = async (
+    req: Request,
+    _res: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const header = req.headers.authorization;
+
+    if (!header) {
+        next();
+        return;
+    }
+
+    try {
+        req.user = await resolveAuthUser(req);
         next();
     } catch (error) {
         if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
