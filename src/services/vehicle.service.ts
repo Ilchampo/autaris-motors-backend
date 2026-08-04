@@ -4,9 +4,9 @@ import type * as vi from '@interfaces/vehicle.interface';
 
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@constants/pagination.constant';
 import { VEHICLE_IMAGES_MAX } from '@constants/validation.constant';
-import { SaleModel } from '@models/sale.model';
 import { VehicleModel } from '@models/vehicle.model';
 import { createLog } from '@services/log.service';
+import { createSale } from '@services/sale.service';
 import { BadRequestError, ConflictError, ForbiddenError, NotFoundError } from '@utils/errors.util';
 import { generateVehicleTitle } from '@utils/vehicle.util';
 
@@ -558,56 +558,28 @@ export const regenerateVehicleTitle = async (
 export const markVehicleAsSold = async (
     params: vi.MarkVehicleAsSoldParams,
 ): Promise<vi.VehicleResponse> => {
-    const { id, authUser, sellingPrice, saleDate, advisorId, notes = null } = params;
+    const { id, authUser, sellingPrice, saleDate, advisorId, notes } = params;
 
     assertEmployee(authUser);
 
-    const vehicle = await findManagedVehicleOrThrow(id);
-
-    if (vehicle.status !== 'published') {
-        throw new ConflictError('Only published vehicles may be marked as sold');
-    }
-
-    const existingSale = await SaleModel.findOne({
-        vehicleId: vehicle._id,
-        status: 'active',
-    }).exec();
-
-    if (existingSale) {
-        throw new ConflictError('An active sale already exists for this vehicle');
-    }
-
-    const resolvedAdvisorId = advisorId ?? authUser.id;
-
-    await SaleModel.create({
-        vehicleId: vehicle._id,
-        advisorId: resolvedAdvisorId,
+    const createParams: Parameters<typeof createSale>[0] = {
+        vehicleId: id,
+        authUser,
         sellingPrice,
         saleDate,
-        notes,
-        status: 'active',
-        createdBy: authUser.id,
-        updatedBy: null,
-    });
+    };
 
-    vehicle.status = 'sold';
-    vehicle.sellingPrice = sellingPrice;
-    vehicle.soldAt = saleDate;
-    vehicle.featured = false;
-    vehicle.featuredAt = null;
-    await vehicle.save();
+    if (advisorId !== undefined) {
+        createParams.advisorId = advisorId;
+    }
 
-    await createLog({
-        message: `Vehicle ${vehicle.title} was marked as sold by ${authUser.email}`,
-        actorId: authUser.id,
-        metadata: {
-            vehicleId: vehicle._id,
-            sellingPrice,
-            advisorId: resolvedAdvisorId,
-        },
-    });
+    if (notes !== undefined) {
+        createParams.notes = notes;
+    }
 
-    return toVehicleResponse(vehicle);
+    await createSale(createParams);
+
+    return getManagedVehicleById(id);
 };
 
 export const deleteVehicle = async (
