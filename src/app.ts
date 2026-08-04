@@ -1,6 +1,10 @@
 import type { Application } from 'express';
 
 import { mongooseInstance } from '@instances/mongoose.instance';
+import { errorHandler } from '@middlewares/error.middleware';
+
+import authRouter from '@routes/auth.route';
+import userRouter from '@routes/user.route';
 
 import cors from 'cors';
 import express from 'express';
@@ -61,6 +65,11 @@ const createApp = async (): Promise<Application> => {
             environment: config.app.env,
         });
     });
+
+    app.use('/api/auth', authRouter);
+    app.use('/api/users', userRouter);
+
+    app.use(errorHandler);
 
     return app;
 };
