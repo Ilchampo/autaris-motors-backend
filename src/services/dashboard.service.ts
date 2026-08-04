@@ -163,7 +163,10 @@ const getSalesByMonth = async (windows: DateRange[]): Promise<MonthlyMetricPoint
     );
 
     return windows.map((window) => {
-        const month = toMonthKey(window.startDate.getUTCFullYear(), window.startDate.getUTCMonth() + 1);
+        const month = toMonthKey(
+            window.startDate.getUTCFullYear(),
+            window.startDate.getUTCMonth() + 1,
+        );
         const metrics = byMonth.get(month);
 
         return {
@@ -207,7 +210,10 @@ const getInquiriesByMonth = async (windows: DateRange[]): Promise<MonthlyMetricP
     );
 
     return windows.map((window) => {
-        const month = toMonthKey(window.startDate.getUTCFullYear(), window.startDate.getUTCMonth() + 1);
+        const month = toMonthKey(
+            window.startDate.getUTCFullYear(),
+            window.startDate.getUTCMonth() + 1,
+        );
 
         return {
             month,
