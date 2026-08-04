@@ -6,6 +6,7 @@ interface MongoConfig {
 interface AppConfig {
     port: number;
     env: string;
+    frontendUrl: string;
 }
 
 interface CorsConfig {

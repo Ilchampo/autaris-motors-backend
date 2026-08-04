@@ -13,6 +13,11 @@ export interface LoginParams {
     password: string;
 }
 
+export interface ResetPasswordParams {
+    token: string;
+    password: string;
+}
+
 export interface AuthResponse {
     token: string;
     user: PublicUser;

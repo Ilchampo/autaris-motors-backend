@@ -45,3 +45,16 @@ export const passwordRecoverySchema = createValidationSchema({
         email: emailSchema,
     }),
 });
+
+export const resetPasswordSchema = createValidationSchema({
+    body: z
+        .object({
+            token: z.string().trim().min(1),
+            password: passwordSchema,
+            confirmPassword: z.string(),
+        })
+        .refine((value) => value.password === value.confirmPassword, {
+            message: 'Passwords do not match',
+            path: ['confirmPassword'],
+        }),
+});

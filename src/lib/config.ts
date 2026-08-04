@@ -8,6 +8,7 @@ const config: Config = {
     app: {
         port: parseInt(process.env['PORT'] ?? '3000'),
         env: process.env['NODE_ENV'] ?? 'development',
+        frontendUrl: process.env['FRONTEND_URL'] ?? 'http://localhost:5173',
     },
     cors: {
         whitelist: process.env['CORS_WHITELIST']?.split(',') ?? [],

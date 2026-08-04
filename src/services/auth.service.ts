@@ -1,19 +1,28 @@
-import type { AuthResponse, LoginParams, RegisterParams } from '@interfaces/auth.interface';
+import type {
+    AuthResponse,
+    LoginParams,
+    RegisterParams,
+    ResetPasswordParams,
+} from '@interfaces/auth.interface';
 import type { PublicUser } from '@interfaces/user.interface';
+import type { UserDocument } from '@models/user.model';
 
+import { PASSWORD_RESET_TOKEN_TTL_MS } from '@constants/auth.constant';
 import { UserModel } from '@models/user.model';
 import { createLog } from '@services/log.service';
 import { sendEmail } from '@services/mailing.service';
-import { getUserByEmail } from '@services/user.service';
-import { ConflictError, UnauthorizedError } from '@utils/errors.util';
+import { BadRequestError, ConflictError, UnauthorizedError } from '@utils/errors.util';
 import { signToken } from '@utils/jwt.util';
+import { generatePasswordResetToken, hashPasswordResetToken } from '@utils/password-reset.util';
 import { comparePassword, hashPassword } from '@utils/password.util';
 
-const toPublicUser = (user: {
-    toObject: () => PublicUser & { passwordHash?: string };
-}): PublicUser => {
+import config from '@lib/config';
+
+const toPublicUser = (user: UserDocument): PublicUser => {
     const publicUser = user.toObject();
     delete (publicUser as Partial<typeof publicUser>).passwordHash;
+    delete (publicUser as Partial<typeof publicUser>).passwordResetTokenHash;
+    delete (publicUser as Partial<typeof publicUser>).passwordResetExpiresAt;
     return publicUser as PublicUser;
 };
 
@@ -105,19 +114,62 @@ export const login = async (params: LoginParams): Promise<AuthResponse> => {
 };
 
 export const requestPasswordRecovery = async (email: string): Promise<void> => {
-    const user = await getUserByEmail(email, { activeOnly: true });
+    const normalizedEmail = email.toLowerCase().trim();
 
-    // Identical response whether the account exists or not (VR-007).
+    const user = await UserModel.findOne({
+        email: normalizedEmail,
+        active: true,
+    }).exec();
+
     if (!user) {
         return;
     }
 
-    // Temporary recovery link placeholder until recovery tokens are implemented.
-    const resetUrl = `${process.env['APP_URL'] ?? 'http://localhost:3000'}/reset-password?email=${encodeURIComponent(user.email)}`;
+    const { token, tokenHash } = generatePasswordResetToken();
+
+    user.passwordResetTokenHash = tokenHash;
+    user.passwordResetExpiresAt = new Date(Date.now() + PASSWORD_RESET_TOKEN_TTL_MS);
+    await user.save();
+
+    const resetUrl = new URL('/reset-password', config.app.frontendUrl);
+    resetUrl.searchParams.set('token', token);
 
     await sendEmail(user.email, 'password-recovery', {
         firstName: user.firstName,
         email: user.email,
-        resetUrl,
+        resetUrl: resetUrl.toString(),
     });
+};
+
+export const resetPassword = async (params: ResetPasswordParams): Promise<PublicUser> => {
+    const { token, password } = params;
+    const tokenHash = hashPasswordResetToken(token);
+
+    const user = await UserModel.findOne({
+        passwordResetTokenHash: tokenHash,
+        passwordResetExpiresAt: { $gt: new Date() },
+        active: true,
+    })
+        .select('+passwordHash +passwordResetTokenHash')
+        .exec();
+
+    if (!user) {
+        throw new BadRequestError('Invalid or expired recovery token');
+    }
+
+    user.passwordHash = await hashPassword(password);
+    user.mustChangePassword = false;
+    user.passwordResetTokenHash = null;
+    user.passwordResetExpiresAt = null;
+
+    await user.save();
+
+    await createLog({
+        message: `User ${user.email} recovered their password`,
+        actorId: user._id,
+        type: 'customer',
+        metadata: { userId: user._id, isFromRecovery: true },
+    });
+
+    return toPublicUser(user);
 };

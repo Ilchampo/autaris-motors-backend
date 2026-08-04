@@ -22,6 +22,8 @@ import * as err from '@lib/utils/errors.util';
 const toPublicUser = (user: UserDocument): PublicUser => {
     const publicUser = user.toObject();
     delete (publicUser as Partial<typeof publicUser>).passwordHash;
+    delete (publicUser as Partial<typeof publicUser>).passwordResetTokenHash;
+    delete (publicUser as Partial<typeof publicUser>).passwordResetExpiresAt;
     return publicUser as PublicUser;
 };
 

@@ -13,11 +13,16 @@ export interface IUser {
     passwordHash: string;
     active: boolean;
     mustChangePassword: boolean;
+    passwordResetTokenHash: string | null;
+    passwordResetExpiresAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }
 
-export type PublicUser = Omit<IUser, 'passwordHash'> & {
+export type PublicUser = Omit<
+    IUser,
+    'passwordHash' | 'passwordResetTokenHash' | 'passwordResetExpiresAt'
+> & {
     _id: Types.ObjectId;
 };
 

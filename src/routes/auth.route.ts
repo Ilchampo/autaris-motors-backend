@@ -26,4 +26,13 @@ router.post(
     authController.requestPasswordRecovery,
 );
 
+// route    POST /api/auth/reset-password
+// desc     Reset password using a recovery token
+// access   public
+router.post(
+    '/reset-password',
+    validateRequest(schemas.resetPasswordSchema),
+    authController.resetPassword,
+);
+
 export default router;

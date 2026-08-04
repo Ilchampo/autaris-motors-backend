@@ -1,4 +1,4 @@
-import type { LoginParams, RegisterParams } from '@interfaces/auth.interface';
+import type { LoginParams, RegisterParams, ResetPasswordParams } from '@interfaces/auth.interface';
 
 import { controller } from '@utils/controller.util';
 
@@ -36,4 +36,11 @@ export const requestPasswordRecovery = controller(async (req) => {
                 'If an account exists for this email, password recovery instructions have been sent',
         },
     };
+});
+
+export const resetPassword = controller(async (req) => {
+    const { token, password } = req.body as ResetPasswordParams;
+    const data = await authService.resetPassword({ token, password });
+
+    return { data };
 });
