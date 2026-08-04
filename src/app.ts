@@ -5,6 +5,7 @@ import { errorHandler } from '@middlewares/error.middleware';
 
 import authRouter from '@routes/auth.route';
 import entityRouter from '@routes/entity.route';
+import logRouter from '@routes/log.route';
 import saleRouter from '@routes/sale.route';
 import systemConfigRouter from '@routes/system-config.route';
 import userRouter from '@routes/user.route';
@@ -80,6 +81,7 @@ const createApp = async (): Promise<Application> => {
     app.use('/api/sales', saleRouter);
     app.use('/api/vehicle-inquiries', vehicleInquiryRouter);
     app.use('/api/vehicle-appraisal-requests', vehicleAppraisalRequestRouter);
+    app.use('/api/logs', logRouter);
 
     app.use(errorHandler);
 

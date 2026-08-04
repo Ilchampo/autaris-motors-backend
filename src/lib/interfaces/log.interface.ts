@@ -18,3 +18,26 @@ export interface CreateLogParams {
     actorId?: string | Types.ObjectId | null;
     metadata?: Record<string, unknown> | null;
 }
+
+export type LogResponse = Omit<ILog, 'actorId'> & {
+    _id: Types.ObjectId;
+    actorId: Types.ObjectId | null;
+};
+
+export const LOG_SORT_OPTIONS = ['createdNewest', 'createdOldest'] as const;
+
+export type LogSortOption = (typeof LOG_SORT_OPTIONS)[number];
+
+export interface LogFilters {
+    type?: LogType;
+    search?: string;
+    actorId?: string;
+}
+
+export interface PaginatedLogs {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    items: LogResponse[];
+}
