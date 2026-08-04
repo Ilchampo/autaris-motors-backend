@@ -21,7 +21,31 @@ export const PASSWORD_RECOVERY_EMAIL: Email = {
     `,
 };
 
+export const VEHICLE_APPRAISAL_REQUEST_EMAIL: Email = {
+    subject: 'New vehicle appraisal request',
+    html: `
+        <p>A new vehicle appraisal request was submitted.</p>
+        <h3>Vehicle</h3>
+        <p><strong>Brand:</strong> {{brand}}</p>
+        <p><strong>Model:</strong> {{model}}</p>
+        <p><strong>Year:</strong> {{year}}</p>
+        <p><strong>Kilometers:</strong> {{kilometers}}</p>
+        <p><strong>City:</strong> {{city}}</p>
+        <p><strong>Transmission:</strong> {{transmission}}</p>
+        <p><strong>Fuel type:</strong> {{fuelType}}</p>
+        <p><strong>Color:</strong> {{color}}</p>
+        <p><strong>Expected price:</strong> {{expectedPrice}}</p>
+        <h3>Seller</h3>
+        <p><strong>Name:</strong> {{firstName}} {{lastName}}</p>
+        <p><strong>Email:</strong> {{email}}</p>
+        <p><strong>Phone:</strong> {{phone}}</p>
+        <p><strong>Preferred contact schedule:</strong> {{preferredContactSchedule}}</p>
+        <p><strong>Notes:</strong> {{notes}}</p>
+    `,
+};
+
 export const EMAIL_TEMPLATES: Record<EmailTemplate, Email> = {
     'create-user': CREATE_USER_EMAIL,
     'password-recovery': PASSWORD_RECOVERY_EMAIL,
+    'vehicle-appraisal-request': VEHICLE_APPRAISAL_REQUEST_EMAIL,
 };

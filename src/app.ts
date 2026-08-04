@@ -8,6 +8,7 @@ import entityRouter from '@routes/entity.route';
 import saleRouter from '@routes/sale.route';
 import systemConfigRouter from '@routes/system-config.route';
 import userRouter from '@routes/user.route';
+import vehicleAppraisalRequestRouter from '@routes/vehicle-appraisal-request.route';
 import vehicleInquiryRouter from '@routes/vehicle-inquiry.route';
 import vehicleRouter from '@routes/vehicle.route';
 
@@ -78,6 +79,7 @@ const createApp = async (): Promise<Application> => {
     app.use('/api/vehicles', vehicleRouter);
     app.use('/api/sales', saleRouter);
     app.use('/api/vehicle-inquiries', vehicleInquiryRouter);
+    app.use('/api/vehicle-appraisal-requests', vehicleAppraisalRequestRouter);
 
     app.use(errorHandler);
 
