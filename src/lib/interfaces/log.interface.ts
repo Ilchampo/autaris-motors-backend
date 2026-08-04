@@ -11,3 +11,10 @@ export interface ILog {
     metadata: Record<string, unknown> | null;
     createdAt: Date;
 }
+
+export interface CreateLogParams {
+    message: string;
+    type?: LogType;
+    actorId?: string | Types.ObjectId | null;
+    metadata?: Record<string, unknown> | null;
+}
