@@ -21,23 +21,33 @@ const upload = multer({
     },
 });
 
+const handleUploadError = (error: unknown, next: (error?: unknown) => void): void => {
+    if (!error) {
+        next();
+        return;
+    }
+
+    if (error instanceof multer.MulterError) {
+        next(new BadRequestError(error.message));
+        return;
+    }
+
+    if (error instanceof Error) {
+        next(new BadRequestError(error.message));
+        return;
+    }
+
+    next(error);
+};
+
 export const uploadEntityImage: RequestHandler = (req, res, next) => {
     upload.single('image')(req, res, (error: unknown) => {
-        if (!error) {
-            next();
-            return;
-        }
+        handleUploadError(error, next);
+    });
+};
 
-        if (error instanceof multer.MulterError) {
-            next(new BadRequestError(error.message));
-            return;
-        }
-
-        if (error instanceof Error) {
-            next(new BadRequestError(error.message));
-            return;
-        }
-
-        next(error);
+export const uploadVehicleImages: RequestHandler = (req, res, next) => {
+    upload.array('images', 10)(req, res, (error: unknown) => {
+        handleUploadError(error, next);
     });
 };

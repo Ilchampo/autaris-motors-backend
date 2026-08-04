@@ -7,6 +7,7 @@ import authRouter from '@routes/auth.route';
 import entityRouter from '@routes/entity.route';
 import systemConfigRouter from '@routes/system-config.route';
 import userRouter from '@routes/user.route';
+import vehicleRouter from '@routes/vehicle.route';
 
 import cors from 'cors';
 import express from 'express';
@@ -72,6 +73,7 @@ const createApp = async (): Promise<Application> => {
     app.use('/api/users', userRouter);
     app.use('/api/entities', entityRouter);
     app.use('/api/system-config', systemConfigRouter);
+    app.use('/api/vehicles', vehicleRouter);
 
     app.use(errorHandler);
 
