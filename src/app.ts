@@ -4,6 +4,7 @@ import { mongooseInstance } from '@instances/mongoose.instance';
 import { errorHandler } from '@middlewares/error.middleware';
 
 import authRouter from '@routes/auth.route';
+import entityRouter from '@routes/entity.route';
 import userRouter from '@routes/user.route';
 
 import cors from 'cors';
@@ -68,6 +69,7 @@ const createApp = async (): Promise<Application> => {
 
     app.use('/api/auth', authRouter);
     app.use('/api/users', userRouter);
+    app.use('/api/entities', entityRouter);
 
     app.use(errorHandler);
 
