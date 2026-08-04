@@ -26,6 +26,12 @@ const config: Config = {
         secret: process.env['JWT_SECRET'] ?? '',
         expiresIn: process.env['JWT_EXPIRES_IN'] ?? '7d',
     },
+    resend: {
+        apiKey: process.env['RESEND_API_KEY'] ?? '',
+        maxRetries: parseInt(process.env['RESEND_MAX_RETRIES'] ?? '3'),
+        retryDelay: parseInt(process.env['RESEND_RETRY_DELAY'] ?? '1000'),
+        fromEmail: process.env['RESEND_FROM_EMAIL'] ?? '',
+    },
 };
 
 export default config;

@@ -17,6 +17,13 @@ interface JwtConfig {
     expiresIn: string;
 }
 
+interface ResendConfig {
+    apiKey: string;
+    maxRetries: number;
+    retryDelay: number;
+    fromEmail: string;
+}
+
 interface CloudinaryConfig {
     cloudName: string;
     apiKey: string;
@@ -30,4 +37,5 @@ export interface Config {
     cloudinary: CloudinaryConfig;
     mongo: MongoConfig;
     jwt: JwtConfig;
+    resend: ResendConfig;
 }
