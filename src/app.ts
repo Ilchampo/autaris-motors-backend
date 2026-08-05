@@ -1,7 +1,9 @@
 import type { Application } from 'express';
 
 import { mongooseInstance } from '@instances/mongoose.instance';
+import { corsMiddleware } from '@middlewares/cors.middleware';
 import { errorHandler } from '@middlewares/error.middleware';
+import { apiRateLimiter } from '@middlewares/rate-limit.middleware';
 
 import authRouter from '@routes/auth.route';
 import dashboardRouter from '@routes/dashboard.route';
@@ -14,7 +16,6 @@ import vehicleAppraisalRequestRouter from '@routes/vehicle-appraisal-request.rou
 import vehicleInquiryRouter from '@routes/vehicle-inquiry.route';
 import vehicleRouter from '@routes/vehicle.route';
 
-import cors from 'cors';
 import express from 'express';
 import config from '@lib/config';
 
@@ -45,22 +46,9 @@ const connectToMongoDB = async (): Promise<void> => {
 const createApp = async (): Promise<Application> => {
     const app = express();
 
-    if (config.app.env === 'production') {
-        app.use(
-            cors({
-                origin: (origin, callback) => {
-                    if (!origin || config.cors.whitelist.includes(origin)) {
-                        callback(null, true);
-                        return;
-                    }
+    app.set('trust proxy', config.app.trustProxy);
 
-                    callback(new Error('Not allowed by CORS'));
-                },
-                credentials: true,
-            }),
-        );
-    }
-
+    app.use(corsMiddleware);
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
@@ -73,6 +61,8 @@ const createApp = async (): Promise<Application> => {
             environment: config.app.env,
         });
     });
+
+    app.use('/api', apiRateLimiter);
 
     app.use('/api/auth', authRouter);
     app.use('/api/users', userRouter);

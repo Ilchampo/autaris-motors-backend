@@ -1,11 +1,14 @@
 import { Router } from 'express';
 
+import { authRateLimiter } from '@middlewares/rate-limit.middleware';
 import { validateRequest } from '@middlewares/validation.middleware';
 
 import * as schemas from '@schemas/auth.schema';
 import * as authController from '@controllers/auth.controller';
 
 const router = Router();
+
+router.use(authRateLimiter);
 
 // route    POST /api/auth/register
 // desc     Register a new user

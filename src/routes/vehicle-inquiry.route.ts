@@ -1,13 +1,15 @@
 import { Router } from 'express';
 
-import * as vehicleInquiryController from '@controllers/vehicle-inquiry.controller';
 import { authenticate, authorize, optionalAuthenticate } from '@middlewares/auth.middleware';
+import { publicWriteRateLimiter } from '@middlewares/rate-limit.middleware';
 import { validateRequest } from '@middlewares/validation.middleware';
 import {
     createVehicleInquirySchema,
     getVehicleInquiriesSchema,
     getVehicleInquiryByIdSchema,
 } from '@schemas/vehicle-inquiry.schema';
+
+import * as vehicleInquiryController from '@controllers/vehicle-inquiry.controller';
 
 const router = Router();
 
@@ -16,6 +18,7 @@ const router = Router();
 // access   public (auth optional; required when WhatsApp onlyRegistered is true)
 router.post(
     '/',
+    publicWriteRateLimiter,
     optionalAuthenticate,
     validateRequest(createVehicleInquirySchema),
     vehicleInquiryController.createVehicleInquiry,
