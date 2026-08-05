@@ -1,0 +1,30 @@
+# Dependencies and build output
+node_modules
+dist
+
+# Git / IDE
+.git
+.gitignore
+.github
+.vscode
+.idea
+*.md
+.docs
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Tooling / local only
+coverage
+.nyc_output
+.eslintcache
+.prettiercache
+*.log
+npm-debug.log*
+.husky
+.cursor
+agent-transcripts
+Dockerfile*
+.dockerignore
